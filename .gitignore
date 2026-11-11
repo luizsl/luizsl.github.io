@@ -1,0 +1,9 @@
+# Local-only scratch files
+.Rhistory
+.RData
+draft.md
+_archive/
+
+# OS cruft
+.DS_Store
+Thumbs.db

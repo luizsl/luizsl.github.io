@@ -1,0 +1,6 @@
+# https://luizsl.github.io/robots.txt
+User-agent: *
+Allow: /
+Disallow: /_archive/
+
+Sitemap: https://luizsl.github.io/sitemap.xml
