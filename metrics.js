@@ -8,7 +8,6 @@
 
 (async function () {
   const nodes = document.querySelectorAll("[data-metric]");
-  const note = document.querySelector("[data-metrics-note]");
   if (!nodes.length) return;
 
   let data;
@@ -36,18 +35,4 @@
     card.hidden = value === null || value === undefined;
   });
 
-  if (note) {
-    const source = data.source_label || data.source || "an external source";
-    const date = data.updated
-      ? new Date(data.updated + "T00:00:00Z").toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-          timeZone: "UTC"
-        })
-      : null;
-    note.textContent = date
-      ? `Bibliographic metrics from ${source}, updated ${date}.`
-      : `Bibliographic metrics from ${source}.`;
-  }
 })();
