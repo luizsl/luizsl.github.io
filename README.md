@@ -20,6 +20,10 @@ this repository is the hand-written, responsive implementation of it.
 | `assets/cv/page-*.png` | CV pages rasterised at 1166 px wide for the web |
 | `images/` | Research figures, portrait, profile icons, Open Graph card |
 | `robots.txt`, `sitemap.xml` | Crawler directives and indexable URLs |
+| `data/metrics.json` | Bibliographic counts rendered on the Publications page |
+| `metrics.js` | Fetches the above and updates the stat cards |
+| `tools/update_metrics.py` | Refreshes `metrics.json` from OpenAlex |
+| `.github/workflows/update-metrics.yml` | Weekly job that runs the script and commits |
 | `_archive/` | Superseded pages and the old shared-footer component (gitignored) |
 
 ## Design system
@@ -84,6 +88,38 @@ Off-page steps that actually determine ranking:
 3. Time. A new subdomain has no history; expect days to weeks for the first
    crawl, longer for a search for the bare name.
 
+## Live metrics
+
+The four stat cards on the Publications page are fed by `data/metrics.json`,
+which `metrics.js` fetches at load time. The numbers also sit in the HTML as a
+fallback, so the page is correct without JavaScript — it just does not refresh.
+
+`tools/update_metrics.py` resolves the author through ORCID
+`0000-0003-3490-9063` and reads `works_count`, `cited_by_count` and
+`summary_stats.h_index` from OpenAlex (no API key, `Access-Control-Allow-Origin: *`).
+A GitHub Actions workflow runs it every Monday and commits the result, which
+triggers a Pages rebuild. Run it by hand with `python3 tools/update_metrics.py`,
+or from the Actions tab via *Run workflow*.
+
+### Switching to NASA ADS
+
+ADS is the authoritative source in astronomy and is the only one that reports
+**read counts** (the design's fourth card). It needs a personal token from
+<https://ui.adsabs.harvard.edu/user/settings/token>, which must never appear in
+client-side code — the token would be public the moment it is committed.
+
+1. Create the token, then add it as the repository secret `ADS_API_TOKEN`
+   (Settings → Secrets and variables → Actions).
+2. Extend `tools/update_metrics.py` with an ADS branch: query the author's
+   bibcodes, sum `citation_count`, compute the h-index from the sorted counts,
+   and read `read_count` from the metrics endpoint.
+3. Set `"source": "ads"` and `"source_label": "NASA ADS"` in the output; the page
+   picks both up automatically and reveals the Reads card once `reads` is non-null.
+
+Do that step with a real token in hand and check the returned fields before
+trusting the numbers — ADS does not document every metric it returns, and a
+silently wrong citation count is worse than a static one.
+
 ## Known gaps
 
 - The HST composite in the first research card exists only inside the Penpot file
@@ -94,5 +130,5 @@ Off-page steps that actually determine ranking:
   not be exported as a file).
 - Footer "Social" links point to the LinkedIn and Instagram profiles; the four brand
   marks on the profile cards are monogram tiles rather than official logos.
-- Publication metrics (12+, 142, 6, 3520+) are the values from the design, dated
-  November 2026; they are not fetched from NASA ADS.
+- Metrics come from OpenAlex, not NASA ADS: they will differ from ADS by a few
+  citations, and the Reads card stays hidden until an ADS token is configured.

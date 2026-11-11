@@ -1,0 +1,41 @@
+name: Update publication metrics
+
+on:
+  schedule:
+    # Mondays, 06:17 UTC. Off-peak minute to avoid the top-of-hour queue.
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-metrics
+  cancel-in-progress: false
+
+jobs:
+  metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the site
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Query OpenAlex and rewrite data/metrics.json
+        run: python3 tools/update_metrics.py
+
+      - name: Commit if the numbers changed
+        run: |
+          if git diff --quiet -- data/metrics.json; then
+            echo "No change in metrics; nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/metrics.json
+          git commit -m "Update publication metrics from OpenAlex"
+          git push
