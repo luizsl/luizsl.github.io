@@ -16,7 +16,7 @@ this repository is the hand-written, responsive implementation of it.
 | `contact.html` | Contact addresses |
 | `404.html` | Not-found page |
 | `style.css` | Design tokens, layout, components, responsive and print rules |
-| `assets/luiz-silva-lima-cv.pdf` | CV source (LaTeX build, November 2026) |
+| `assets/curriculum-vitae.pdf` | CV source (LaTeX build, November 2026) |
 | `assets/cv/page-*.png` | CV pages rasterised at 1166 px wide for the web |
 | `images/` | Research figures, portrait, profile icons, Open Graph card |
 | `robots.txt`, `sitemap.xml` | Crawler directives and indexable URLs |
@@ -48,13 +48,13 @@ Then open <http://localhost:8000>.
 
 ## Refreshing the CV
 
-The CV page shows rasterised pages of `assets/luiz-silva-lima-cv.pdf`, so the page and
+The CV page shows rasterised pages of `assets/curriculum-vitae.pdf`, so the page and
 the download always match. After rebuilding the PDF from the LaTeX sources:
 
 ```bash
-cp /path/to/curriculum_vitae.pdf assets/luiz-silva-lima-cv.pdf
+cp /path/to/curriculum_vitae.pdf assets/curriculum-vitae.pdf
 rm -f assets/cv/page-*.png
-pdftoppm -r 141 -png assets/luiz-silva-lima-cv.pdf assets/cv/page
+pdftoppm -r 141 -png assets/curriculum-vitae.pdf assets/cv/page
 ```
 
 `-r 141` produces 1166 px wide pages, matching the design frame. If the page count
