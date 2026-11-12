@@ -1,38 +1,38 @@
-/* Live bibliographic metrics for the Publications page.
+/* Stat cards for the Publications page.
  *
- * Reads data/metrics.json (rewritten weekly by .github/workflows/update-metrics.yml)
- * and updates the stat cards. The markup already carries the last known values, so
- * with JavaScript disabled, or if the fetch fails, the page still renders the numbers
- * committed in the HTML — it simply does not refresh them.
+ * Reads window.siteMetrics, defined in data/metrics.js — the single place the
+ * numbers live — and fills the cards. Loading that file with a <script> tag
+ * rather than fetch() means the numbers also appear when the page is opened
+ * straight from disk, where file:// blocks XHR.
  */
 
-(async function () {
+(function () {
   const nodes = document.querySelectorAll("[data-metric]");
   if (!nodes.length) return;
 
-  let data;
-  try {
-    const response = await fetch("data/metrics.json", { cache: "no-store" });
-    if (!response.ok) return;
-    data = await response.json();
-  } catch (error) {
-    return; // offline or file:// — keep the static values
+  const data = window.siteMetrics;
+  if (!data) {
+    console.warn("data/metrics.js did not load; keeping the placeholder dashes");
+    return;
   }
 
-  const format = (value) => Number(value).toLocaleString("en-GB");
+  // Thousands separated by a non-breaking space (3 570), never a comma, and
+  // never wrapped across two lines.
+  const group = (digits) => digits.replace(/\B(?=(\d{3})+(?!\d))/g, "\u00A0");
+
+  const render = (value) => {
+    if (typeof value === "number") return group(String(value));
+
+    const text = String(value).trim();
+    const match = text.match(/^(\d+)(\D*)$/);
+    if (match) return group(match[1]) + match[2];
+
+    return text;
+  };
 
   nodes.forEach((node) => {
-    const key = node.dataset.metric;
-    const value = data[key];
+    const value = data[node.dataset.metric];
     if (value === null || value === undefined) return;
-    node.textContent = format(value);
+    node.textContent = render(value);
   });
-
-  // The "Reads" card only makes sense once a source provides that number (ADS).
-  document.querySelectorAll("[data-metric-card]").forEach((card) => {
-    const key = card.dataset.metricCard;
-    const value = data[key];
-    card.hidden = value === null || value === undefined;
-  });
-
 })();

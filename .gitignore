@@ -4,6 +4,9 @@
 draft.md
 _archive/
 
+# Original image sources — local working files, never published
+images/source_images/
+
 # OS cruft
 .DS_Store
 Thumbs.db

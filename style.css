@@ -269,7 +269,7 @@ main {
 
 .hero .wrap {
   padding-top: var(--space-3);
-  min-height: 600px;
+  min-height: 490px;
 }
 
 .hero__focus {
@@ -375,6 +375,10 @@ main {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-2);
   margin-top: -71px;
+  /* Breathing room before the footer seam, matching the other pages. Padding,
+     not margin: the grid sits inside a wrapper whose only padding is inline, so a
+     bottom margin could collapse through it. */
+  padding-bottom: var(--space-5);
   position: relative;
 }
 
@@ -524,6 +528,9 @@ main {
 
 .research-intro__portrait {
   align-self: start;
+  /* In the design the portrait starts level with the lead line, not with the
+     page title: H1 height (40) + the 16 px gap above the lead. */
+  margin-top: 56px;
 }
 
 .research-intro__portrait img {
@@ -608,19 +615,6 @@ main {
 
 .research-card--reverse .research-card__body {
   text-align: left;
-}
-
-.figure-pending {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  min-height: 260px;
-  border: 1px dashed var(--border-strong);
-  border-radius: var(--radius);
-  color: var(--muted);
-  font-size: 14px;
-  text-align: center;
-  padding: var(--space-3);
 }
 
 /* --------------------------------------------------------------------------
@@ -1019,6 +1013,7 @@ main {
 
   .research-intro__portrait {
     order: 2;
+    margin-top: 0;
   }
 
   .research-intro .lead {
